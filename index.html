@@ -89,18 +89,60 @@
     <h1>Telecomando Cancello</h1>
     <p>Controllo remoto del cancello</p>
 
-<a class="pulsante" href="https://t.me/MioCancelloCasa_bot">
+
+<button class="pulsante" onclick="apriCancello()">
   APRI CANCELLO
-</a>
+</button>
+<p id="messaggio">Pronto</p>
+
 
     <p id="messaggio">Pronto</p>
   </main>
 
-  <script>
-    function mostraMessaggio() {
-      document.getElementById("messaggio").textContent =
-        "Il collegamento al comando è ancora da configurare.";
+ 
+<script>
+async function apriCancello() {
+  const password = prompt("Inserisci la password del telecomando");
+
+  if (!password) return;
+
+  const messaggio = document.getElementById("messaggio");
+
+  if (!confirm("Vuoi inviare il comando di apertura?")) {
+    return;
+  }
+
+  messaggio.textContent = "Invio del comando...";
+
+  try {
+    const risposta = await fetch(
+      "https://telecomando-cancello.infrasmartconnect.workers.dev/api/apri",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ password: password })
+      }
+    );
+
+    const risultato = await risposta.json();
+
+    if (!risposta.ok) {
+      throw new Error(risultato.errore || "Richiesta rifiutata");
     }
-  </script>
+
+    messaggio.textContent =
+      "Comando inviato al sistema!";
+  } catch (errore) {
+    messaggio.textContent =
+      "Errore: " + errore.message;
+  }
+}
+</script>
+</body>
+</html>
+
+  
 </body>
 </html>
